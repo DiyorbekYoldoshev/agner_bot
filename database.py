@@ -40,6 +40,11 @@ class Database:
         result = dict_fetchone(self.cursor)
         return result
 
+    def update_personal_username(self, user_id, username):
+        self.cursor.execute("UPDATE personal SET username = ? WHERE id = ?", (username, user_id))
+        self.connection.commit()
+        self.connection.close()
+
     # ========================
     # Biznes metodlari
     # ========================
