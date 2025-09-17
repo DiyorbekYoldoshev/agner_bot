@@ -35,6 +35,11 @@ class Database:
         self.cursor.execute("SELECT * FROM personal_results WHERE user_id = ?", (user_id,))
         return dict_fetchall(self.cursor)
 
+    def get_personal_by_id(self,id):
+        self.cursor.execute("""SELECT * FROM personal_users WHERE id = ?""",(id,))
+        result = dict_fetchone(self.cursor)
+        return result
+
     # ========================
     # Biznes metodlari
     # ========================
@@ -65,6 +70,40 @@ class Database:
     def get_business_reports(self, user_id):
         self.cursor.execute("SELECT * FROM business_reports WHERE user_id = ?", (user_id,))
         return dict_fetchall(self.cursor)
+
+
+    def add_personal_pomodoro(self, user_id, session_count, focus_minutes, break_minutes):
+        self.cursor.execute("""
+            INSERT INTO personal_pomodoro(user_id, session_count, focus_minutes, break_minutes)
+            VALUES (?, ?, ?, ?)
+        """, (user_id, session_count, focus_minutes, break_minutes))
+        self.connection.commit()
+
+    def get_personal_pomodoro_stats(self, user_id):
+        self.cursor.execute("""
+            SELECT SUM(session_count) as total_sessions,
+                   SUM(focus_minutes) as total_focus,
+                   SUM(break_minutes) as total_break
+            FROM personal_pomodoro WHERE user_id = ?
+        """, (user_id,))
+        return dict_fetchone(self.cursor)
+
+
+    def add_business_pomodoro(self, employee_id, session_count, focus_minutes, break_minutes):
+        self.cursor.execute("""
+            INSERT INTO business_pomodoro(employee_id, session_count, focus_minutes, break_minutes)
+            VALUES (?, ?, ?, ?)
+        """, (employee_id, session_count, focus_minutes, break_minutes))
+        self.connection.commit()
+
+    def get_business_pomodoro_stats(self, employee_id):
+        self.cursor.execute("""
+            SELECT SUM(session_count) as total_sessions,
+                   SUM(focus_minutes) as total_focus,
+                   SUM(break_minutes) as total_break
+            FROM business_pomodoro WHERE employee_id = ?
+        """, (employee_id,))
+        return dict_fetchone(self.cursor)
 
 
 
